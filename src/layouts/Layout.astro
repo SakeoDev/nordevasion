@@ -1,0 +1,559 @@
+﻿
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+}
+
+const { title = 'Nord Évasion 59' } = Astro.props;
+const currentPath = Astro.url.pathname;
+const isLoginPage = currentPath === '/connexion';
+
+const navigation = [
+  { label: 'Tableau de bord', href: '/', icon: 'dashboard' },
+  { label: 'Registre des règlements', href: '/cheques', icon: 'receipt' },
+  { label: 'Ajouter un règlement', href: '/ajouter', icon: 'plus' },
+  { label: 'Mes dépôts', href: '/deposes', icon: 'deposit' },
+  { label: 'Exports PDF', href: '/exports', icon: 'file' },
+  { label: 'Historique', href: '/historique', icon: 'history' },
+];
+
+const icons: Record<string, string> = {
+  dashboard: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+
+  receipt: '<path d="M4 3.5A1.5 1.5 0 0 1 5.5 2h13A1.5 1.5 0 0 1 20 3.5V22l-4-2-4 2-4-2-4 2z"/><path d="M8 7h8M8 11h8M8 15h5"/>',
+
+  plus: '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
+
+  deposit: '<path d="M3 10h18M5 10V6l7-3 7 3v4"/><path d="M5 10v9M9 10v9M15 10v9M19 10v9M3 22h18"/>',
+
+  file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/>',
+
+  history: '<path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>',
+};
+
+const mobileNavigation = navigation.filter((item) =>
+  ['/', '/cheques', '/ajouter', '/deposes', '/exports'].includes(item.href)
+);
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f8fa" />
+    <meta name="description" content="Gestion de la trésorerie de Nord Évasion 59" />
+    <title>{title}</title>
+  </head>
+
+  <body>
+    {isLoginPage ? (
+      <slot />
+    ) : (
+      <>
+        <!-- SIDEBAR -->
+        <aside class="app-sidebar">
+
+          <a href="/" class="app-brand">
+            <div class="brand-symbol">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 17V7l8 10V7l8 10V7"/>
+              </svg>
+            </div>
+
+            <div>
+              <span class="app-brand-name">NORD ÉVASION</span>
+              <span class="app-brand-subtitle">Gestion de trésorerie</span>
+            </div>
+          </a>
+
+          <p class="app-nav-label">MENU PRINCIPAL</p>
+
+          <nav class="app-nav">
+            {navigation.map((item) => (
+              <a
+                href={item.href}
+                class:list={[
+                  'app-nav-link',
+                  currentPath === item.href && 'active',
+                ]}
+                aria-current={currentPath === item.href ? 'page' : undefined}
+              >
+                <span class="app-nav-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    set:html={icons[item.icon]}
+                  />
+                </span>
+
+                <span>{item.label}</span>
+
+                {currentPath === item.href && (
+                  <span class="active-indicator"></span>
+                )}
+              </a>
+            ))}
+          </nav>
+
+          <!-- ACCOUNT -->
+          <div class="app-sidebar-bottom">
+
+            <div class="app-account">
+              <div class="app-account-icon" id="profile-initials">JG</div>
+
+              <div class="app-account-details">
+                <p class="app-account-name" id="profile-name">
+                  Jean Pascal Gosselin
+                </p>
+                <p class="app-account-role" id="profile-role">
+                  Trésorier
+                </p>
+              </div>
+            </div>
+
+            <p class="app-account-email" id="profile-email"></p>
+
+            <button id="logout-button" class="app-logout">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 17l5-5-5-5M15 12H3"/>
+                <path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/>
+              </svg>
+              Déconnexion
+            </button>
+
+          </div>
+        </aside>
+
+        <!-- MOBILE NAVIGATION -->
+        <nav class="app-mobile-nav">
+          {mobileNavigation.map((item) => (
+            <a
+              href={item.href}
+              class:list={[
+                'app-mobile-link',
+                currentPath === item.href && 'active',
+              ]}
+              aria-current={currentPath === item.href ? 'page' : undefined}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                set:html={icons[item.icon]}
+              />
+
+              <span>
+                {item.href === '/' ? 'Accueil' :
+                  item.href === '/cheques' ? 'Registre' :
+                  item.href === '/ajouter' ? 'Ajouter' :
+                  item.href === '/deposes' ? 'Dépôts' : 'PDF'}
+              </span>
+            </a>
+          ))}
+        </nav>
+
+        <!-- PAGE CONTENT -->
+        <div class="app-content">
+          <slot />
+        </div>
+      </>
+    )}
+
+    <!-- SUPABASE AUTHENTICATION AND PROFILE -->
+    <script>
+      import { supabase } from '../lib/supabase';
+
+      const logoutButton = document.querySelector('#logout-button');
+
+      async function loadProfile() {
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+          window.location.href = '/connexion';
+          return;
+        }
+
+        // Création du profil uniquement s'il n'existe pas.
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .upsert(
+            {
+              id: user.id,
+              first_name: 'Jean Pascal',
+              last_name: 'Gosselin',
+              role: 'Trésorier',
+              association_name: 'Nord Évasion 59',
+            },
+            {
+              onConflict: 'id',
+              ignoreDuplicates: true,
+            }
+          );
+
+        if (insertError) {
+          console.error('Erreur de création du profil :', insertError.message);
+        }
+
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('first_name, last_name, role, association_name')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError || !profile) {
+          console.error('Erreur de récupération du profil :', profileError);
+          return;
+        }
+
+        const fullName = [profile.first_name, profile.last_name]
+          .filter(Boolean)
+          .join(' ');
+
+        const initials = [profile.first_name, profile.last_name]
+          .filter(Boolean)
+          .map((part: string) => part.charAt(0).toUpperCase())
+          .join('');
+
+        const nameElement = document.querySelector('#profile-name');
+        const initialsElement = document.querySelector('#profile-initials');
+        const emailElement = document.querySelector('#profile-email');
+        const roleElement = document.querySelector('#profile-role');
+
+        if (nameElement) {
+          nameElement.textContent = fullName || user.email || 'Utilisateur';
+        }
+
+        if (initialsElement) {
+          initialsElement.textContent = initials || 'U';
+        }
+
+        if (emailElement) {
+          emailElement.textContent = user.email || '';
+        }
+
+        if (roleElement) {
+          roleElement.textContent = profile.role || 'Membre';
+        }
+
+        // Informations du tableau de bord.
+        const dashboardName = document.querySelector('#dashboard-user-name');
+        const dashboardEmail = document.querySelector('#dashboard-user-email');
+        const dashboardInitials = document.querySelector('#dashboard-user-initials');
+
+        if (dashboardName) {
+          dashboardName.textContent = fullName || 'Utilisateur';
+        }
+
+        if (dashboardEmail) {
+          dashboardEmail.textContent = user.email || '';
+        }
+
+        if (dashboardInitials) {
+          dashboardInitials.textContent = initials || 'U';
+        }
+      }
+
+      if (window.location.pathname !== '/connexion') {
+        loadProfile();
+
+        supabase.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_OUT' || !session) {
+            window.location.href = '/connexion';
+          }
+        });
+      }
+
+      logoutButton?.addEventListener('click', async () => {
+        const { error } = await supabase.auth.signOut();
+
+        if (!error) {
+          window.location.href = '/connexion';
+        }
+      });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --app-green: #244b38;
+    --app-green-dark: #193a2b;
+    --app-bg: #f6f7f9;
+    --app-text: #202124;
+    --sidebar-width: 260px;
+  }
+
+  body {
+    background: var(--app-bg);
+    color: var(--app-text);
+  }
+
+  /* SIDEBAR */
+  .app-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 40;
+    width: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    padding: 30px 18px 20px;
+    background: #fff;
+    border-right: 1px solid #edf0ed;
+  }
+
+  .app-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 9px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .brand-symbol {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    color: white;
+    background: var(--app-green);
+    flex-shrink: 0;
+  }
+
+  .brand-symbol svg {
+    width: 25px;
+    height: 25px;
+  }
+
+  .app-brand-name {
+    display: block;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .045em;
+  }
+
+  .app-brand-name span {
+    color: var(--app-green);
+  }
+
+  .app-brand-subtitle {
+    display: block;
+    margin-top: 4px;
+    color: #929a95;
+    font-size: 11px;
+  }
+
+  /* NAVIGATION */
+  .app-nav-label {
+    margin: 48px 12px 13px;
+    color: #a2a9a4;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .11em;
+  }
+
+  .app-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .app-nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-height: 49px;
+    padding: 0 13px;
+    border-radius: 11px;
+    color: #727b75;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background .2s ease, color .2s ease;
+  }
+
+  .app-nav-link:hover {
+    color: var(--app-green);
+    background: #f5f7f5;
+  }
+
+  .app-nav-link.active {
+    color: var(--app-green);
+    background: #edf3ef;
+    font-weight: 650;
+  }
+
+  .app-nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .app-nav-icon svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .active-indicator {
+    width: 5px;
+    height: 5px;
+    margin-left: auto;
+    border-radius: 50%;
+    background: var(--app-green);
+  }
+
+  /* ACCOUNT */
+  .app-sidebar-bottom {
+    margin-top: auto;
+    padding-top: 18px;
+    border-top: 1px solid #edf0ed;
+  }
+
+  .app-account {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 8px;
+  }
+
+  .app-account-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    color: var(--app-green);
+    background: #edf3ef;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .app-account-details {
+    min-width: 0;
+  }
+
+  .app-account-name {
+    font-size: 12px;
+    font-weight: 650;
+  }
+
+  .app-account-role {
+    margin-top: 3px;
+    color: #929a95;
+    font-size: 11px;
+  }
+
+  .app-account-email {
+    padding-left: 57px;
+    color: #929a95;
+    font-size: 10px;
+    overflow-wrap: anywhere;
+  }
+
+  .app-logout {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px 13px;
+    border: 0;
+    border-radius: 10px;
+    color: #7c8580;
+    background: transparent;
+    font-size: 12px;
+    text-align: left;
+    transition: .2s ease;
+  }
+
+  .app-logout:hover {
+    color: #b54141;
+    background: #fff4f3;
+  }
+
+  .app-logout svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  /* CONTENT */
+  .app-content {
+    min-height: 100vh;
+    margin-left: var(--sidebar-width);
+  }
+
+  .app-mobile-nav {
+    display: none;
+  }
+
+  /* MOBILE */
+  @media (max-width: 1023px) {
+    .app-sidebar {
+      display: none;
+    }
+
+    .app-content {
+      margin-left: 0;
+      padding-bottom: 85px;
+    }
+
+    .app-mobile-nav {
+      position: fixed;
+      z-index: 50;
+      inset: auto 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      min-height: 72px;
+      padding: 8px 5px calc(8px + env(safe-area-inset-bottom));
+      background: rgba(255,255,255,.96);
+      border-top: 1px solid #edf0ed;
+      backdrop-filter: blur(16px);
+    }
+
+    .app-mobile-link {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 0;
+      padding: 6px 2px;
+      color: #929a95;
+      font-size: 10px;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .app-mobile-link svg {
+      width: 21px;
+      height: 21px;
+    }
+
+    .app-mobile-link.active {
+      color: var(--app-green);
+      font-weight: 700;
+    }
+  }
+</style>

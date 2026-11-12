@@ -1,16 +1,316 @@
----
+﻿---
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Nord Évasion 59 — Gestion de trésorerie">
+  <div class="min-h-screen bg-[#f6f7f9] text-[#202124]">
+    <main class="min-w-0">
+      <header class="h-[76px] bg-white border-b border-gray-100 flex items-center justify-between px-5 md:px-9 lg:px-10">
+        <div>
+          <p id="dashboard-user-name" class="text-sm font-semibold">Chargement...</p>
+          <p id="dashboard-user-email" class="text-[11px] text-gray-400">Espace personnel</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="hidden sm:block text-right">
+            <p class="text-sm font-bold">Trésorier</p>
+            <p class="text-[11px] text-gray-400">Espace personnel</p>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-[#e9eee9] flex items-center justify-center text-[#31563d] font-bold">
+            <span id="dashboard-user-initials">JPG</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="max-w-[1450px] mx-auto px-5 md:px-9 lg:px-10 py-8 md:py-10">
+        <section class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 mb-9">
+          <div>
+            <p class="text-sm text-gray-400 mb-2">Trésorerie de Nord Évasion 59</p>
+            <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">Bonjour <span id="dashboard-greeting-name" class="text-blue-500">Jean Pascal</span> !</h1>
+            <p class="text-gray-500 text-sm mt-2">Voici une vue d'ensemble de votre trésorerie à ce jour</p>
+          </div>
+          <a href="/ajouter" class="inline-flex items-center justify-center gap-3 bg-[#436eca] hover:bg-blue-700 text-white rounded-xl px-6 py-4 font-semibold text-sm shadow-sm transition">
+            <span class="text-xl">＋</span> Ajouter un règlement
+          </a>
+        </section>
+
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold text-lg">Vue d'ensemble</h2>
+          <select id="year-filter" class="text-sm font-semibold bg-white border border-gray-200 rounded-lg px-4 py-2 text-gray-600 outline-none"></select>
+        </div>
+
+        <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+          <div class="bg-white border border-gray-100 rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-5">
+              <span class="text-sm text-gray-500">Total des recettes</span>
+              <span class="w-10 h-10 rounded-xl bg-green-50 text-green-700 flex items-center justify-center text-xl">€</span>
+            </div>
+            <p id="total-amount" class="text-3xl font-semibold tracking-tight">—</p>
+            <p class="text-xs text-gray-400 mt-2">Hors règlements annulés</p>
+          </div>
+          <div class="bg-white border border-gray-100 rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-5">
+              <span class="text-sm text-gray-500">Règlements reçus</span>
+              <span class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-xl">▤</span>
+            </div>
+            <p id="total-count" class="text-3xl font-semibold tracking-tight">—</p>
+            <p class="text-xs text-gray-400 mt-2">Hors règlements annulés</p>
+          </div>
+          <div class="bg-white border border-gray-100 rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-5">
+              <span class="text-sm text-gray-500">Chèques à déposer</span>
+              <span class="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl">◷</span>
+            </div>
+            <p id="pending-amount" class="text-3xl font-semibold tracking-tight">—</p>
+            <p id="pending-count" class="text-xs text-gray-400 mt-2">Chèques en attente de dépôt</p>
+          </div>
+          <div class="bg-white border border-gray-100 rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-5">
+              <span class="text-sm text-gray-500">Chèques déposés</span>
+              <span class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-xl">✓</span>
+            </div>
+            <p id="deposited-amount" class="text-3xl font-semibold tracking-tight">—</p>
+            <p id="deposited-count" class="text-xs text-gray-400 mt-2">En attente d'encaissement</p>
+          </div>
+        </section>
+
+        <section class="mb-9">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="font-semibold text-lg">Répartition par moyen de paiement</h2>
+              <p class="text-xs text-gray-400 mt-1">Recettes de l'année sélectionnée, hors règlements annulés</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <article class="rounded-2xl border border-blue-100 bg-blue-50/60 p-5">
+              <div class="flex items-center justify-between gap-2">
+                <p class="text-sm font-semibold text-blue-800">Chèque bancaire</p>
+                <span class="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">BLEU</span>
+              </div>
+              <p id="bank-cheque-total" class="mt-4 text-2xl font-bold text-blue-950">—</p>
+              <p id="bank-cheque-count" class="mt-1 text-xs text-blue-700">— règlement(s)</p>
+            </article>
+            <article class="rounded-2xl border border-violet-100 bg-violet-50/60 p-5">
+              <div class="flex items-center justify-between gap-2">
+                <p class="text-sm font-semibold text-violet-800">ANCV</p>
+                <span class="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700">VIOLET</span>
+              </div>
+              <p id="ancv-total" class="mt-4 text-2xl font-bold text-violet-950">—</p>
+              <p id="ancv-count" class="mt-1 text-xs text-violet-700">— règlement(s)</p>
+            </article>
+            <article class="rounded-2xl border border-orange-100 bg-orange-50/60 p-5">
+              <div class="flex items-center justify-between gap-2">
+                <p class="text-sm font-semibold text-orange-800">Espèces</p>
+                <span class="rounded-full bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-700">ORANGE</span>
+              </div>
+              <p id="cash-total" class="mt-4 text-2xl font-bold text-orange-950">—</p>
+              <p id="cash-count" class="mt-1 text-xs text-orange-700">— règlement(s)</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+          <div class="xl:col-span-2 bg-white border border-gray-100 rounded-2xl overflow-hidden">
+            <div class="flex items-center justify-between p-6 border-b border-gray-100">
+              <div>
+                <h2 class="font-semibold text-lg">Derniers règlements</h2>
+                <p class="text-xs text-gray-400 mt-1">Vos dernières opérations enregistrées</p>
+              </div>
+              <a href="/cheques" class="text-sm font-semibold text-[#315c43] hover:underline">Tout voir →</a>
+            </div>
+            <div id="recent-list" class="p-6">
+              <p class="text-sm text-gray-400 text-center py-8">Chargement des règlements...</p>
+            </div>
+          </div>
+
+          <div class="bg-white border border-gray-100 rounded-2xl p-6">
+            <h2 class="font-semibold text-lg">Accès rapides</h2>
+            <p class="text-xs text-gray-400 mt-1 mb-6">Les actions les plus utilisées</p>
+            <div class="space-y-3">
+              <a href="/ajouter" class="flex items-center gap-4 p-4 rounded-xl bg-[#edf3ef] hover:bg-[#e2ebe5] transition">
+                <div class="w-11 h-11 rounded-xl bg-white flex items-center justify-center text-xl text-[#315c43]">＋</div>
+                <div>
+                  <p class="font-semibold text-sm text-[#244b38]">Ajouter un règlement</p>
+                  <p class="text-xs text-gray-500 mt-1">Enregistrer un nouveau paiement</p>
+                </div>
+              </a>
+              <a href="/cheques" class="flex items-center gap-4 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition">
+                <div class="w-11 h-11 rounded-xl bg-white flex items-center justify-center text-xl text-gray-600">▤</div>
+                <div>
+                  <p class="font-semibold text-sm">Consulter le registre</p>
+                  <p class="text-xs text-gray-400 mt-1">Retrouver les règlements</p>
+                </div>
+              </a>
+              <a href="/deposes" class="flex items-center gap-4 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition">
+                <div class="w-11 h-11 rounded-xl bg-white flex items-center justify-center text-xl text-gray-600">⌑</div>
+                <div>
+                  <p class="font-semibold text-sm">Suivi des dépôts</p>
+                  <p class="text-xs text-gray-400 mt-1">Suivre les chèques bancaires</p>
+                </div>
+              </a>
+              <a href="/exports" class="flex items-center gap-4 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition">
+                <div class="w-11 h-11 rounded-xl bg-white flex items-center justify-center text-xl text-gray-600">▧</div>
+                <div>
+                  <p class="font-semibold text-sm">Exporter les données</p>
+                  <p class="text-xs text-gray-400 mt-1">Accéder aux exports PDF</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <p id="dashboard-error" class="hidden mt-5 text-sm text-red-600 bg-red-50 rounded-xl p-4"></p>
+        <p class="text-xs text-gray-400 mt-8 text-center">Nord Évasion 59 · Gestion de trésorerie</p>
+      </div>
+    </main>
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../lib/supabase';
+
+  type Payment = {
+    id: string;
+    payer_name: string;
+    amount: number;
+    received_at: string;
+    category: string;
+    status: string;
+    cheque_number: string | null;
+    payment_method: 'cheque' | 'especes' | 'ancv' | null;
+  };
+
+  const yearFilter = document.querySelector('#year-filter') as HTMLSelectElement;
+  const recentList = document.querySelector('#recent-list') as HTMLDivElement;
+  const errorBox = document.querySelector('#dashboard-error') as HTMLParagraphElement;
+
+  const money = (value: number) =>
+    new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
+
+  const escapeHTML = (value: unknown) =>
+    String(value ?? '').replace(/[&<>"']/g, (char) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;',
+    })[char] || char);
+
+  const formatDate = (value: string | null) => {
+    if (!value) return 'Date non renseignée';
+    return new Intl.DateTimeFormat('fr-FR').format(new Date(`${value}T12:00:00`));
+  };
+
+  const statusLabels: Record<string, string> = {
+    a_deposer: 'À déposer', depose: 'Déposé', encaisse: 'Encaissé', annule: 'Annulé',
+  };
+  const statusStyles: Record<string, string> = {
+    a_deposer: 'bg-orange-50 text-orange-700',
+    depose: 'bg-blue-50 text-blue-700',
+    encaisse: 'bg-green-50 text-green-700',
+    annule: 'bg-gray-100 text-gray-500',
+  };
+  const methodLabels: Record<string, string> = {
+    cheque: 'Chèque bancaire', especes: 'Espèces', ancv: 'ANCV',
+  };
+  const methodStyles: Record<string, string> = {
+    cheque: 'bg-blue-50 text-blue-700',
+    especes: 'bg-orange-50 text-orange-700',
+    ancv: 'bg-violet-50 text-violet-700',
+  };
+
+  const currentYear = new Date().getFullYear();
+  for (let year = currentYear; year >= currentYear - 5; year--) {
+    const option = document.createElement('option');
+    option.value = String(year);
+    option.textContent = `Année ${year}`;
+    if (year === currentYear) option.selected = true;
+    yearFilter.appendChild(option);
+  }
+
+  async function loadDashboard() {
+    errorBox.classList.add('hidden');
+    recentList.innerHTML = '<p class="text-sm text-gray-400 text-center py-8">Chargement des règlements...</p>';
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      window.location.href = '/connexion';
+      return;
+    }
+
+    const year = yearFilter.value;
+    const { data, error } = await supabase
+      .from('cheques')
+      .select('id, payer_name, amount, received_at, category, status, cheque_number, payment_method')
+      .gte('received_at', `${year}-01-01`)
+      .lte('received_at', `${year}-12-31`)
+      .order('received_at', { ascending: false })
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      errorBox.textContent = `Impossible de charger les règlements : ${error.message}`;
+      errorBox.classList.remove('hidden');
+      recentList.innerHTML = '<p class="text-sm text-gray-400 text-center py-8">Les données ne sont pas disponibles.</p>';
+      return;
+    }
+
+    const payments = (data || []) as Payment[];
+    const valid = payments.filter((item) => item.status !== 'annule');
+    const sum = (items: Payment[]) => items.reduce((total, item) => total + Number(item.amount || 0), 0);
+    const byMethod = (method: 'cheque' | 'especes' | 'ancv') =>
+      valid.filter((item) => (item.payment_method || 'cheque') === method);
+
+    const bankCheques = byMethod('cheque');
+    const cash = byMethod('especes');
+    const ancv = byMethod('ancv');
+    const pending = bankCheques.filter((item) => item.status === 'a_deposer');
+    const deposited = bankCheques.filter((item) => item.status === 'depose');
+
+    document.querySelector('#total-amount')!.textContent = money(sum(valid));
+    document.querySelector('#total-count')!.textContent = String(valid.length);
+    document.querySelector('#pending-amount')!.textContent = money(sum(pending));
+    document.querySelector('#pending-count')!.textContent = `${pending.length} chèque(s) en attente de dépôt`;
+    document.querySelector('#deposited-amount')!.textContent = money(sum(deposited));
+    document.querySelector('#deposited-count')!.textContent = `${deposited.length} chèque(s) en attente d'encaissement`;
+
+    document.querySelector('#bank-cheque-total')!.textContent = money(sum(bankCheques));
+    document.querySelector('#bank-cheque-count')!.textContent = `${bankCheques.length} règlement(s)`;
+    document.querySelector('#ancv-total')!.textContent = money(sum(ancv));
+    document.querySelector('#ancv-count')!.textContent = `${ancv.length} règlement(s)`;
+    document.querySelector('#cash-total')!.textContent = money(sum(cash));
+    document.querySelector('#cash-count')!.textContent = `${cash.length} règlement(s)`;
+
+    const latest = payments.slice(0, 5);
+    if (latest.length === 0) {
+      recentList.innerHTML = `
+        <div class="text-center py-10">
+          <div class="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto text-2xl text-gray-400">▤</div>
+          <p class="font-semibold mt-4 text-gray-700">Aucun règlement cette année</p>
+          <p class="text-sm text-gray-400 mt-2">Les règlements enregistrés apparaîtront ici.</p>
+          <a href="/ajouter" class="inline-flex mt-5 text-sm font-semibold text-[#315c43] hover:underline">Ajouter un règlement →</a>
+        </div>`;
+      return;
+    }
+
+    recentList.innerHTML = latest.map((item) => {
+      const method = item.payment_method || 'cheque';
+      return `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-4 border-b border-gray-100 last:border-0">
+          <div class="min-w-0">
+            <p class="font-semibold text-sm text-gray-800">${escapeHTML(item.payer_name)}</p>
+            <p class="text-xs text-gray-400 mt-1">
+              ${escapeHTML(item.category)} · ${formatDate(item.received_at)}
+              ${item.cheque_number && method === 'cheque' ? ` · N° ${escapeHTML(item.cheque_number)}` : ''}
+            </p>
+            <span class="inline-flex mt-2 text-[11px] font-semibold px-2.5 py-1 rounded-full ${methodStyles[method] || methodStyles.cheque}">
+              ${methodLabels[method] || methodLabels.cheque}
+            </span>
+          </div>
+          <div class="sm:text-right shrink-0">
+            <p class="font-semibold text-sm">${money(Number(item.amount))}</p>
+            <span class="inline-block mt-1 text-[11px] font-medium px-2.5 py-1 rounded-full ${statusStyles[item.status] || 'bg-gray-100 text-gray-600'}">
+              ${statusLabels[item.status] || 'Inconnu'}
+            </span>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  yearFilter.addEventListener('change', loadDashboard);
+  loadDashboard();
+</script>
